@@ -48,7 +48,7 @@ func main() {
 			fmt.Println("Migrations applied successfully!")
 		}
 	case "down":
-		if err := m.Down(); err != migrate.ErrNoChange {
+		if err := m.Down(); err != nil {
 			if err == migrate.ErrNoChange {
 				log.Println("No migrations to rollback.")
 			} else {
