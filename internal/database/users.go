@@ -1,7 +1,9 @@
 package database
 
 import (
+	"context"
 	"database/sql"
+	"time"
 )
 
 type UserModel struct {
@@ -12,4 +14,31 @@ type User struct {
 	Email    string `json:"email"`
 	Name     string `json:"name"`
 	Password string `json:"-"`
+}
+
+func (m *UserModel) Insert(user *User) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := "INSERT INTO users (email,name,password) VALUES ($1,$2,$3) RETURNING id"
+	err := m.DB.QueryRowContext(ctx, stmt, user.Email, user.Name, user.Password).Scan(&user.Id)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+func (m *UserModel) Get(userId int) (*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	query := `SELECT * FROM users WHERE user_id=$1`
+	var user User
+	err := m.DB.QueryRowContext(ctx, query, userId).Scan(&user.Id, &user.Name, &user.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
 }

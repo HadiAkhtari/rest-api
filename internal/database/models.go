@@ -10,8 +10,8 @@ type Models struct {
 
 func NewModels(db *sql.DB) Models {
 	return Models{
-		Users:     UserModel{DB: db},
-		Events:    EventsModel{DB: db},
-		Attendees: AttendeeModel{DB: db},
+		Users:     UserModel{db},
+		Events:    EventsModel{db},
+		Attendees: AttendeeModel{db},
 	}
 }
